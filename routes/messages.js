@@ -1,3 +1,15 @@
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const { SECRET_KEY } = require('../config')
+const ExpressError = require('../expressError')
+
+
+const User = require('../models/user') 
+const Message = require('../models/message')
+
+
+const router = new express.Router()
+
 /** GET /:id - get detail of message.
  *
  * => {message: {id,
@@ -28,3 +40,4 @@
  *
  **/
 
+module.exports = router

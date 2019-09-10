@@ -20,6 +20,7 @@ class User {
       VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
       RETURNING username, password, first_name, last_name, phone`, [user.username, hashedPassword, user.first_name, user.last_name, user.phone]
     );
+    console.log("HERE ======>>>>>>",result.rows[0])
     return result.rows[0];
    }
 
@@ -56,7 +57,7 @@ class User {
 
   static async all() { 
     const result = await db.query(
-      `SELECT username, first_name, last_name
+      `SELECT username, first_name, last_name, phone
       FROM users`
     );
 
@@ -153,7 +154,6 @@ class User {
       }
     });
 
-    console.log('RESULLLLTTTTT', mapped);
     return mapped;
 
   }
