@@ -20,18 +20,22 @@ class User {
       VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
       RETURNING username, password, first_name, last_name, phone`, [user.username, hashedPassword, user.first_name, user.last_name, user.phone]
     );
-    console.log("HERE ======>>>>>>",result.rows[0])
     return result.rows[0];
-   }
+  }
 
   /** Authenticate: is this username/password valid? Returns boolean. */
 
-  static async authenticate(username, password) { 
+  static async authenticate(username, password) {
     const result = await db.query(
       `SELECT password
        FROM users 
        WHERE username = $1`, [username]
     );
+
+    if (!result.rows[0]) {
+      throw new ExpressError(`No such username: ${username}`, 400);
+    }
+
     const user = result.rows[0];
     const authStatus = await bcrypt.compare(password, user.password);
 
@@ -48,16 +52,16 @@ class User {
     );
 
     if (!result.rows[0]) {
-      throw new ExpressError(`No such username: ${user}`, 404);
+      throw new ExpressError(`No such username: ${username}`, 404);
     }
-   }
+  }
 
   /** All: basic info on all users:
    * [{username, first_name, last_name, phone}, ...] */
 
-  static async all() { 
+  static async all() {
     const result = await db.query(
-      `SELECT username, first_name, last_name, phone
+      `SELECT username, first_name, last_name
       FROM users`
     );
 
@@ -73,13 +77,11 @@ class User {
    *          join_at,
    *          last_login_at } */
 
-  static async get(username) { 
+  static async get(username) {
     const result = await db.query(
       `SELECT username, first_name, last_name, phone, join_at, last_login_at
       FROM users WHERE username = $1`, [username]
     );
-
-    console.log("RESULLLLLTTT GET USER:", result)
 
     if (!result.rows[0]) {
       throw new ExpressError(`No such user: ${username}`, 404);
@@ -121,7 +123,7 @@ class User {
     });
 
     return mapped;
-   }
+  }
 
 
   /** Return messages to this user.
@@ -132,7 +134,7 @@ class User {
    *   {id, first_name, last_name, phone}
    */
 
-  static async messagesTo(username) { 
+  static async messagesTo(username) {
     const result = await db.query(
       `SELECT id, from_username, body, sent_at, read_at, users.first_name, users.last_name, users.phone 
       FROM messages

@@ -47,7 +47,7 @@ router.get('/:id', ensureLoggedIn, async function (req, res, next) {
  *
  **/
 
-router.post('/', ensureLoggedin, async function (req, res, next) {
+router.post('/', ensureLoggedIn, async function (req, res, next) {
   try {
     const message = await Message.create(req.body);
 

@@ -4,7 +4,7 @@ const { SECRET_KEY } = require('../config')
 const ExpressError = require('../expressError')
 
 
-const User = require('../models/user') 
+const User = require('../models/user')
 const Message = require('../models/message')
 
 
@@ -16,18 +16,17 @@ const router = new express.Router()
  *
  **/
 
-router.post('/login', async function(req, res, next) {
+router.post('/login', async function (req, res, next) {
   try {
     const { username, password } = req.body;
     const result = await User.authenticate(username, password);
     if (result) {
       let token = jwt.sign({ username }, SECRET_KEY);
-      console.log('TOKEN:', token)
       return res.json({ token })
     }
     throw new ExpressError("Invalid user/password", 400);
   }
-  catch(err) {
+  catch (err) {
     return next(err);
   }
 })
@@ -40,22 +39,20 @@ router.post('/login', async function(req, res, next) {
  *  Make sure to update their last-login!
  */
 
- router.post('/register', async function(req, res, next) {
-   try {
-    const {username, password, first_name, last_name, phone} = req.body;
-    const result = await User.register({username, password, first_name, last_name, phone})
+router.post('/register', async function (req, res, next) {
+  try {
+    const { username, password, first_name, last_name, phone } = req.body;
+    const result = await User.register({ username, password, first_name, last_name, phone })
 
     if (result) {
       let token = jwt.sign({ username }, SECRET_KEY);
-      console.log('TOKEN:', token)
       return res.json({ token })
     }
     throw new ExpressError("Invalid user/password", 400);
-   }
-   catch(err) {
-    return next(err)  
-   }
+  }
+  catch (err) {
+    return next(err)
+  }
 })
 
-
- module.exports = router
+module.exports = router
