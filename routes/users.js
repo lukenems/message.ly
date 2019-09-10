@@ -2,6 +2,9 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { SECRET_KEY } = require('../config')
 const ExpressError = require('../expressError')
+const { ensureCorrectUser } = require('../middleware/auth')
+const { authenticateJWT } = require('../middleware/auth')
+const { ensureLoggedIn } = require('../middleware/auth')
 
 
 const User = require('../models/user')
@@ -15,7 +18,7 @@ const router = new express.Router()
  *
  **/
 
-router.get('/', async function (req, res, next) {
+router.get('/', ensureLoggedIn, async function (req, res, next) {
   try {
     const users = await User.all()
     if (users) {
@@ -34,9 +37,8 @@ router.get('/', async function (req, res, next) {
  *
  **/
 
-router.get('/:username', async function (req, res, next) {
+router.get('/:username', ensureLoggedIn, ensureCorrectUser, async function (req, res, next) {
   try {
-    console.log("USERNAME *******", req.params.username)
     const user = await User.get(req.params.username)
 
     return res.json({ user });
@@ -56,7 +58,7 @@ router.get('/:username', async function (req, res, next) {
 *
 **/
 
-router.get('/:username/to', async function (req, res, next) {
+router.get('/:username/to', ensureLoggedIn, ensureCorrectUser, async function (req, res, next) {
   try {
     const messages = await User.messagesTo(req.params.username)
     if (messages) {
@@ -78,7 +80,7 @@ router.get('/:username/to', async function (req, res, next) {
  *
  **/
 
-router.get('/:username/from', async function (req, res, next) {
+router.get('/:username/from', ensureLoggedIn, ensureCorrectUser, async function (req, res, next) {
   try {
     const messages = await User.messagesFrom(req.params.username)
     if (messages) {
