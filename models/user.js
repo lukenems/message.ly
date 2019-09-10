@@ -79,6 +79,8 @@ class User {
       FROM users WHERE username = $1`, [username]
     );
 
+    console.log("RESULLLLLTTT GET USER:", result)
+
     if (!result.rows[0]) {
       throw new ExpressError(`No such user: ${username}`, 404);
     }
